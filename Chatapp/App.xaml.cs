@@ -13,5 +13,17 @@ namespace Chatapp
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            // Create two instances of the main window
+            MainWindow mainWindow1 = new MainWindow();
+
+            // Show the two main windows
+            mainWindow1.Show();
+        }
     }
+
+
 }

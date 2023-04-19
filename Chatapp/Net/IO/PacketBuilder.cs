@@ -22,7 +22,7 @@ namespace ChatClient.Net.IO
             _memory.WriteByte(opcode);
         }
 
-        public void WriteString(string message)
+        public void WriteMessaage(string message)
         {
             int messageLength = message.Length;
             _memory.Write(BitConverter.GetBytes(messageLength));

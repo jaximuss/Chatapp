@@ -31,7 +31,5 @@ namespace ChatClient.Net.IO
 
             return message;
         }
-
-
     }
 }

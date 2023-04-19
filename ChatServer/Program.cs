@@ -2,6 +2,7 @@
 using ChatServer.Net.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 
 class Program
 {
@@ -23,7 +24,7 @@ class Program
             _users.Add(client);
 
             //broacast the connection to everyone on the server
-
+            BroadcastConnection();
         }
 
         static void BroadcastConnection()
@@ -34,11 +35,39 @@ class Program
                 {
                     var broadcastPacket = new PacketBuilder();
                     broadcastPacket.WriteOpCode(1); 
-                    broadcastPacket.WriteMessage(broadcastPacket.ToString());
+                    broadcastPacket.WriteMessage(usr.UserName);
+                    broadcastPacket.WriteMessage(usr.UID.ToString());
+                    user.ClientSocket.Client.Send(broadcastPacket.GetPacketBytes());
+                        
                 }
                
             }
         }   
     }
+    public static void BroadcastMessage(string message)
+    {
+        foreach (var user in _users)
+        {
+            var broadcastPacket = new PacketBuilder();
+            broadcastPacket.WriteOpCode(5);
+            broadcastPacket.WriteMessage(message);
+            user.ClientSocket.Client.Send(broadcastPacket.GetPacketBytes());
+        }
+    }
 
+    public static void BroadcastDisconnect(string uid)
+    {
+        var disconnectedUser = _users.Where(x => x.UID.ToString() == uid).FirstOrDefault();
+        _users.Remove(disconnectedUser);
+
+        foreach (var user in _users)
+        {
+            var broadcastPacket = new PacketBuilder();
+            broadcastPacket.WriteOpCode(10);
+            broadcastPacket.WriteMessage(uid);
+            user.ClientSocket.Client.Send(broadcastPacket.GetPacketBytes());
+        }
+
+         BroadcastMessage($"[{disconnectedUser.UserName}] has disconnected!");
+    }
 }
